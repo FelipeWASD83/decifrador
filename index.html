@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Decifrador</title>
+  <meta name="description" content="Cole um texto cifrado e o site testa dezenas de codificações e cifras, em camadas, até sair algo que faça sentido. Tudo roda no seu navegador.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; worker-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+
+<!-- 1. entrada (claro) -->
+<section class="topo" aria-labelledby="titulo">
+  <div class="hud hud-tl">DECIFRADOR</div>
+  <div class="hud hud-tr">[ nada sai do seu navegador ]</div>
+
+  <div class="topo-grade">
+    <div class="topo-texto">
+      <h1 id="titulo"><span class="forte">Cole o texto cifrado.</span> <span class="fraco">O site testa cada codificação e cada cifra, em camadas, até sair algo que faça sentido.</span></h1>
+      <div class="exemplos" aria-label="Exemplos prontos">
+        <span class="rotulo">exemplos</span>
+        <div id="exemplos" class="chips"></div>
+      </div>
+    </div>
+
+    <form id="formulario" class="entrada" autocomplete="off">
+      <label for="entrada" class="rotulo">texto cifrado</label>
+      <textarea id="entrada" rows="7" spellcheck="false" placeholder="Ex.: TWVldCBtZSBhdCBtaWRuaWdodA==   ·   KHOOR ZRUOG   ·   .... . .-.. .-.. ---"></textarea>
+
+      <details class="chave">
+        <summary><span>[ + ]</span> Sei uma chave ou palavra-chave</summary>
+        <label for="chave" class="rotulo">chave (opcional)</label>
+        <input id="chave" type="text" spellcheck="false" placeholder="Ex.: LIMAO">
+        <p class="nota">Se preencher, o site também tenta Vigenère, Beaufort, autochave e XOR com essa chave.</p>
+      </details>
+
+      <div class="acoes">
+        <button type="submit" id="botao" class="botao-primario">[ DECIFRAR ]</button>
+        <button type="button" id="parar" class="botao-secundario" hidden>parar</button>
+        <button type="button" id="limpar" class="botao-secundario">limpar</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="hud hud-bl" id="hud-metodos">0 métodos</div>
+  <div class="hud hud-br" id="hud-estado">pronto</div>
+</section>
+
+<!-- 2. a fita e o resultado (escuro) -->
+<section class="mesa" id="mesa" aria-labelledby="titulo-mesa" aria-live="polite">
+  <div class="mesa-grade">
+    <div class="fita-bloco">
+      <div class="mesa-cabeca">
+        <h2 id="titulo-mesa" class="rotulo">[ fita de tentativas ]</h2>
+        <span class="rotulo" id="fita-resumo">vazia</span>
+      </div>
+      <div class="fita" id="fita" role="list">
+        <p class="fita-vazia" id="fita-vazia">Cada método testado vira uma linha aqui, com uma barra de "quanto isso parece língua de verdade". A linha que vence ganha o carimbo.</p>
+      </div>
+    </div>
+
+    <article class="resposta" id="resposta" aria-label="Resultado">
+      <p class="resposta-vazia">A resposta aparece aqui.</p>
+    </article>
+  </div>
+</section>
+
+<!-- 3. o que ele testa (claro) -->
+<section class="catalogo" aria-labelledby="titulo-catalogo">
+  <h2 id="titulo-catalogo" class="titulo-secao"><span class="forte">O que ele sabe testar.</span> <span class="fraco">Tudo o que tem volta exata ou cai na estatística da língua.</span></h2>
+  <div class="colunas" id="catalogo"></div>
+</section>
+
+<!-- 4. o que não dá (escuro) -->
+<section class="limites" aria-labelledby="titulo-limites">
+  <h2 id="titulo-limites" class="titulo-secao"><span class="forte">O que nenhum site decifra.</span> <span class="fraco">"Qualquer código" não existe, e é bom saber onde acaba.</span></h2>
+  <div class="colunas">
+    <div class="coluna">
+      <p class="rotulo">cifra moderna</p>
+      <h3>AES, RSA, ChaCha, PGP</h3>
+      <p>Sem a chave, nem o computador mais rápido do mundo abre. O site reconhece o formato e avisa, em vez de inventar uma resposta.</p>
+    </div>
+    <div class="coluna">
+      <p class="rotulo">hash</p>
+      <h3>MD5, SHA, bcrypt</h3>
+      <p>Hash foi feito para não ter volta. Só dá para adivinhar a senha original e comparar, e isso o site não faz.</p>
+    </div>
+    <div class="coluna">
+      <p class="rotulo">texto curto demais</p>
+      <h3>Poucas letras, várias respostas</h3>
+      <p>Com cinco ou seis letras uma cifra clássica pode ter mais de uma leitura possível. Ele mostra as outras hipóteses para você escolher.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="rodape">
+  <p><span class="forte">Como ele decide o que faz sentido.</span> <span class="fraco">Pontua o texto de 0 a 1 olhando quatro letras seguidas e quanto dele cabe em palavras comuns de português e inglês. Passa de 0,5 e ele diz que decifrou.</span></p>
+  <p class="rotulo">tudo roda aqui, no seu navegador · nenhum texto é enviado, guardado ou registrado</p>
+</footer>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
