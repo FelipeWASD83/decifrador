@@ -21,3 +21,7 @@ Nada do que você cola sai do navegador nem fica guardado.
 ## Para quem for mexer
 
 Ver `CLAUDE.md`. Testes: `node --test "testes/*.test.js"`.
+
+## Licença
+
+Código sob a licença MIT (arquivo `LICENSE`).
